@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+body {
+  @apply bg-slate-50 text-slate-900;
+  font-family: 'Inter', system-ui, sans-serif;
+  overscroll-behavior-y: none;
+  /* Prevent pull-to-refresh on mobile */
+}
+
+/* Custom Scrollbar hide */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
