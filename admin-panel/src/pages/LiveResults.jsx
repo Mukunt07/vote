@@ -9,7 +9,8 @@ const CANDIDATE_META = {
     'dmk': { name: 'DMK', color: '#dc2626', logo: '/parties/dmk.png' },
     'tvk': { name: 'TVK', color: '#ca8a04', logo: '/parties/tvk.jpg' },
     'aiadmk': { name: 'AIADMK', color: '#059669', logo: '/parties/aiadmk.jpg' },
-    'ntk': { name: 'NTK', color: '#ea580c', logo: '/parties/ntk.jpg' }
+    'ntk': { name: 'NTK', color: '#ea580c', logo: '/parties/ntk.jpg' },
+    'nota': { name: 'NOTA', color: '#475569', logo: '/parties/nota.png' }
 };
 
 const CustomTooltip = ({ active, payload, label }) => {

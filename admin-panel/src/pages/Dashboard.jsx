@@ -181,8 +181,9 @@ export default function Dashboard() {
                             recentVotes.map((vote) => (
                                 <div key={vote.id} className="flex items-start gap-4 p-4 rounded-xl bg-slate-900/50 border border-slate-800/50 hover:border-slate-700 transition-all group">
                                     <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${vote.party === 'Dravida Munnetra Kazhagam' ? 'bg-red-500' :
-                                            vote.party === 'Tamizhaga Vetri Kazhagam' ? 'bg-yellow-500' :
-                                                vote.party === 'All India Anna Dravida Munnetra Kazhagam' ? 'bg-emerald-500' :
+                                        vote.party === 'Tamizhaga Vetri Kazhagam' ? 'bg-yellow-500' :
+                                            vote.party === 'All India Anna Dravida Munnetra Kazhagam' ? 'bg-emerald-500' :
+                                                vote.party === 'None Of The Above' ? 'bg-slate-500' :
                                                     'bg-orange-500'
                                         }`}></div>
                                     <div className="flex-1">
