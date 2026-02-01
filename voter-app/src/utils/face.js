@@ -3,14 +3,16 @@ import * as faceapi from '@vladmandic/face-api';
 const MODEL_URL = '/models';
 
 // Load models from public/models
+// Load models from public/models
 export async function loadModels() {
     try {
         await Promise.all([
-            faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+            // Optimization: Use TinyFaceDetector (lighter, faster for mobile)
+            faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
             faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
             faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
         ]);
-        console.log("AI Models Loaded");
+        console.log("AI Models Loaded (TinyFace Optimized)");
         return true;
     } catch (err) {
         console.error("Failed to load AI models:", err);
@@ -22,7 +24,11 @@ export async function loadModels() {
 export async function getFaceDescriptor(imageOrVideo) {
     if (!imageOrVideo) return null;
 
-    const detection = await faceapi.detectSingleFace(imageOrVideo)
+    // Use TinyFaceDetector with adjusted options for mobile selfie capability
+    // inputSize 224 is standard for speed/accuracy balance on mobile web
+    const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 });
+
+    const detection = await faceapi.detectSingleFace(imageOrVideo, options)
         .withFaceLandmarks()
         .withFaceDescriptor();
 

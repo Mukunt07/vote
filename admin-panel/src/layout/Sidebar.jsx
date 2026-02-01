@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { LayoutDashboard, CheckCircle, FileText, Activity, ShieldCheck, LogOut, Menu, X } from 'lucide-react';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { LayoutDashboard, CheckCircle, FileText, Activity, ShieldCheck, LogOut, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 const cn = (...inputs) => twMerge(clsx(inputs));
 
-const NavItem = ({ icon: Icon, label, active, onClick, collapsed }) => (
-    <button
+const NavItem = ({ icon: Icon, label, active, to, onClick, collapsed }) => (
+    <Link
+        to={to}
         onClick={onClick}
         className={cn(
             "flex items-center w-full px-4 py-3 mb-1 transition-colors rounded-lg group",
@@ -17,15 +19,15 @@ const NavItem = ({ icon: Icon, label, active, onClick, collapsed }) => (
     >
         <Icon size={20} className={cn("shrink-0", active ? "text-emerald-400" : "text-slate-400 group-hover:text-slate-200")} />
         {!collapsed && <span className="ml-3 font-medium text-sm">{label}</span>}
-    </button>
+    </Link>
 );
 
-export default function Sidebar({ mobileOpen, setMobileOpen, activePage, onNavigate, onLogout, user }) {
+export default function Sidebar({ mobileOpen, setMobileOpen, activePage, onLogout, user }) {
     const menuItems = [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { id: 'results', label: 'Live Results', icon: CheckCircle },
-        { id: 'audit', label: 'Audit Log', icon: FileText },
-        { id: 'status', label: 'System Status', icon: Activity },
+        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+        { id: 'results', label: 'Live Results', icon: CheckCircle, path: '/results' },
+        { id: 'audit', label: 'Audit Log', icon: FileText, path: '/audit' },
+        { id: 'status', label: 'System Status', icon: Activity, path: '/status' },
     ];
 
     return (
@@ -66,10 +68,8 @@ export default function Sidebar({ mobileOpen, setMobileOpen, activePage, onNavig
                                 icon={item.icon}
                                 label={item.label}
                                 active={activePage === item.id}
-                                onClick={() => {
-                                    onNavigate(item.id);
-                                    setMobileOpen(false);
-                                }}
+                                to={item.path}
+                                onClick={() => setMobileOpen(false)}
                             />
                         ))}
                     </nav>

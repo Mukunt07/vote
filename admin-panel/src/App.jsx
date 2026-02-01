@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import MainLayout from './layout/MainLayout';
 import Dashboard from './pages/Dashboard';
-
 import Login from './pages/Login';
 import LiveResults from './pages/LiveResults';
 import AuditLog from './pages/AuditLog';
 import SystemStatus from './pages/SystemStatus';
+import Signup from './pages/Signup';
+import { RequireAuth } from './components/ProtectedRoute';
 
 import { collection, getDocs } from 'firebase/firestore';
 import { db, auth } from './lib/firebase';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
-import Signup from './pages/Signup';
 
-function App() {
+function AppContent() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [hasAdmin, setHasAdmin] = useState(null); // null=loading, true=exists, false=signup needed
+  const [hasAdmin, setHasAdmin] = useState(null);
   const [adminCheckError, setAdminCheckError] = useState(null);
-  const [activePage, setActivePage] = useState('dashboard');
+  const location = useLocation();
 
   useEffect(() => {
     const checkAdminExists = async () => {
@@ -26,20 +27,17 @@ function App() {
         setHasAdmin(!snapshot.empty);
       } catch (err) {
         console.error("Failed to check admin status", err);
-        // Show error to user to help debug "No Signup Found"
         setAdminCheckError(err.message);
       }
     };
     checkAdminExists();
 
-    // 1. Check for Firebase Session (Google Auth)
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         setUser({
           email: firebaseUser.email,
           displayName: firebaseUser.displayName || 'Admin',
           photoURL: firebaseUser.photoURL,
-          isMock: false
         });
         setLoading(false);
       } else {
@@ -51,79 +49,79 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  const handleLogin = (userData) => {
-    setUser(userData);
-    if (userData.isMock) {
-      localStorage.setItem('admin_session', JSON.stringify(userData));
-    }
-  };
-
   const handleLogout = async () => {
-    try {
-      if (user?.isMock) {
-        localStorage.removeItem('admin_session');
-      } else {
-        await signOut(auth);
-      }
-      setUser(null);
-    } catch (error) {
-      console.error("Error signing out: ", error);
-    }
+    await signOut(auth);
+    setUser(null);
   };
 
   if (adminCheckError) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-rose-500 p-4">
         <p className="font-bold text-lg mb-2">System Error</p>
-        <p className="text-sm mb-4">Failed to verify system status: {adminCheckError}</p>
-        <div className="flex gap-4">
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-slate-800 text-white rounded hover:bg-slate-700"
-          >
-            Retry
-          </button>
-          <button
-            onClick={() => setHasAdmin(false)}
-            className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-500"
-          >
-            Force Signup (Setup)
-          </button>
-        </div>
-        <p className="mt-6 text-xs text-slate-500 max-w-md text-center">
-          <strong>Note:</strong> This error usually means Firestore Security Rules are blocking public read access to the 'admins' collection.
-          Update your rules to allow <code>read</code> on <code>/admins</code>.
-        </p>
+        <p className="text-sm mb-4">Failed to check admin status: {adminCheckError}</p>
+        <button onClick={() => window.location.reload()} className="px-4 py-2 bg-slate-800 text-white rounded">Retry</button>
       </div>
     );
   }
 
   if (loading || hasAdmin === null) {
-    return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-emerald-500">Loading...</div>;
+    return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-emerald-500">Loading Secure System...</div>;
   }
 
-  if (!user) {
-    if (!hasAdmin) {
-      return <Signup onSignup={() => setHasAdmin(true)} />;
-    }
-    return <Login onLogin={handleLogin} />;
-  }
+  // Wrapper for Layout to handle Active Page Highlighting based on Route
+  const AppLayout = ({ children }) => {
+    const activePage = location.pathname.substring(1) || 'dashboard';
+    // If we are on root, default to dashboard
+    const current = activePage === '' ? 'dashboard' : activePage;
 
-  const renderPage = () => {
-    switch (activePage) {
-      case 'dashboard': return <Dashboard />;
-      case 'results': return <LiveResults />;
-      case 'audit': return <AuditLog />;
-      case 'status': return <SystemStatus />;
-      default: return <Dashboard />;
-    }
+    return (
+      <MainLayout activePage={current} onNavigate={() => { }} onLogout={handleLogout} user={user}>
+        {children}
+      </MainLayout>
+    );
   };
 
   return (
-    <MainLayout activePage={activePage} onNavigate={setActivePage} onLogout={handleLogout} user={user}>
-      {renderPage()}
-    </MainLayout>
+    <Routes>
+      <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+      <Route path="/signup" element={!hasAdmin ? <Signup onSignup={() => setHasAdmin(true)} /> : <Navigate to="/login" />} />
+
+      {/* Protected Admin Routes */}
+      <Route path="/" element={
+        <RequireAuth user={user}>
+          <AppLayout><Dashboard /></AppLayout>
+        </RequireAuth>
+      } />
+      <Route path="/dashboard" element={
+        <RequireAuth user={user}>
+          <AppLayout><Dashboard /></AppLayout>
+        </RequireAuth>
+      } />
+      <Route path="/results" element={
+        <RequireAuth user={user}>
+          <AppLayout><LiveResults /></AppLayout>
+        </RequireAuth>
+      } />
+      <Route path="/audit" element={
+        <RequireAuth user={user}>
+          <AppLayout><AuditLog /></AppLayout>
+        </RequireAuth>
+      } />
+      <Route path="/status" element={
+        <RequireAuth user={user}>
+          <AppLayout><SystemStatus /></AppLayout>
+        </RequireAuth>
+      } />
+
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
+}

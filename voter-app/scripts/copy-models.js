@@ -16,7 +16,8 @@ if (!fs.existsSync(destDir)) {
 const modelsToCopy = [
     'ssd_mobilenetv1_model',
     'face_landmark_68_model',
-    'face_recognition_model'
+    'face_recognition_model',
+    'tiny_face_detector_model'
 ];
 
 async function copyModels() {
