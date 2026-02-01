@@ -18,16 +18,23 @@ service cloud.firestore {
     
     // FACE REGISTRY: Write-once lock
     match /face_registry/{faceId} {
-      allow read: if request.auth != null; // Admin stats
-      allow create: if true; // Public registration
-      allow update, delete: if false; // Immutable
+      allow read: if true; // Public need to check existence
+      allow create: if true; 
+      allow update, delete: if false; 
     }
 
     // MOBILE REGISTRY: Write-once lock
     match /mobile_registry/{mobileId} {
-      allow read: if request.auth != null; // Admin stats
-      allow create: if true; // Public registration
-      allow update, delete: if false; // Immutable
+      allow read: if true; 
+      allow create: if true; 
+      allow update, delete: if false; 
+    }
+
+    // BIOMETRIC REGISTRY: AI Face Vectors
+    match /biometric_registry/{id} {
+      allow read: if true; // Public need to check similarity
+      allow create: if true;
+      allow update, delete: if false;
     }
 
     match /{document=**} {

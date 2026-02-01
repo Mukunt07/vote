@@ -15,7 +15,7 @@ const CANDIDATES = [
 export default function VotingScreen() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { mobile, faceHash } = location.state || {};
+    const { mobile, faceHash, faceDescriptor } = location.state || {};
 
     const [selectedId, setSelectedId] = useState(null);
     const [submitting, setSubmitting] = useState(false);
@@ -44,6 +44,7 @@ export default function VotingScreen() {
             await castVote({
                 mobile,
                 faceHash,
+                faceDescriptor,
                 candidateId: candidate.id,
                 candidateName: candidate.name,
                 party: candidate.party
@@ -51,10 +52,15 @@ export default function VotingScreen() {
             navigate('/success');
         } catch (err) {
             console.error(err);
-            if (err.message.includes('permission-denied') || err.code === 'permission-denied') {
+            // Handle Firestore permissions (Rule rejection) OR Custom AI Duplicate Error
+            if (err.message.includes('permission-denied') ||
+                err.code === 'permission-denied' ||
+                err.message.includes('already voted') ||
+                err.message.includes('Duplicate')) {
                 navigate('/already-voted');
             } else {
-                setError('Vote failed. Please try again or contact support.');
+                // Show specific error if available, else generic
+                setError(err.message || 'Vote failed. Please try again or contact support.');
                 setSubmitting(false);
             }
         }
