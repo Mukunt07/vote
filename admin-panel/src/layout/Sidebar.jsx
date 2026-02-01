@@ -48,7 +48,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen, activePage, onLogou
                 <div className="flex flex-col h-full">
                     {/* Logo Area */}
                     <div className="flex items-center h-16 px-6 border-b border-slate-800">
-                        <ShieldCheck className="w-8 h-8 text-emerald-500" />
+                        <img src="/logo.png" alt="SecureVote Logo" className="w-8 h-8 object-contain" />
                         <span className="ml-3 text-lg font-bold tracking-tight text-white">
                             Secure<span className="text-emerald-500">Vote</span>
                         </span>

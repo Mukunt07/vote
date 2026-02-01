@@ -4,13 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Info } from 'lucide-react';
 import Layout from '../components/Layout';
 import { castVote } from '../lib/voting';
-
-const CANDIDATES = [
-    { id: 'dmk', name: 'DMK', party: 'Dravida Munnetra Kazhagam', color: 'bg-red-600', logo: '/parties/dmk.png' },
-    { id: 'tvk', name: 'TVK', party: 'Tamizhaga Vetri Kazhagam', color: 'bg-yellow-600', logo: '/parties/tvk.jpg' },
-    { id: 'aiadmk', name: 'AIADMK', party: 'All India Anna Dravida Munnetra Kazhagam', color: 'bg-emerald-600', logo: '/parties/aiadmk.jpg' },
-    { id: 'ntk', name: 'NTK', party: 'Naam Tamilar Katchi', color: 'bg-orange-600', logo: '/parties/ntk.jpg' },
-];
+import { CANDIDATES } from '../config/election';
+import { Button } from '../components/ui/Button';
 
 export default function VotingScreen() {
     const location = useLocation();
@@ -57,7 +52,7 @@ export default function VotingScreen() {
                 err.code === 'permission-denied' ||
                 err.message.includes('already voted') ||
                 err.message.includes('Duplicate')) {
-                navigate('/already-voted');
+                navigate('/already-voted', { state: { reason: err.message } });
             } else {
                 // Show specific error if available, else generic
                 setError(err.message || 'Vote failed. Please try again or contact support.');
@@ -132,17 +127,18 @@ export default function VotingScreen() {
             {/* Sticky Action Footer */}
             <div className="fixed bottom-0 left-0 right-0 p-4 pt-6 bg-white/80 backdrop-blur-xl border-t border-slate-200 z-40">
                 <div className="max-w-md mx-auto">
-                    <button
+                    <Button
                         onClick={handleSubmit}
                         disabled={!selectedId || submitting}
-                        className="w-full h-16 bg-gradient-to-r from-slate-900 to-slate-800 disabled:from-slate-200 disabled:to-slate-300 disabled:text-slate-500 text-white font-medium rounded-2xl text-lg shadow-xl shadow-slate-900/10 transition-all flex items-center justify-center gap-2"
+                        variant="gradient"
+                        className="w-full h-16 text-lg rounded-2xl"
                     >
                         {submitting ? (
                             <>Processing Vote...</>
                         ) : (
                             <>Confirm Vote <Check size={20} className="ml-1" /></>
                         )}
-                    </button>
+                    </Button>
                 </div>
             </div>
         </Layout>

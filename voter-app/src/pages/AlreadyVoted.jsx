@@ -1,11 +1,13 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertOctagon, ArrowLeft } from 'lucide-react';
 import Layout from '../components/Layout';
 
 export default function AlreadyVoted() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const reason = location.state?.reason || "Duplicate Entry Detected";
 
     return (
         <Layout>
@@ -23,7 +25,10 @@ export default function AlreadyVoted() {
 
                 <h1 className="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Access Denied</h1>
                 <p className="text-slate-500 font-medium leading-relaxed max-w-xs">
-                    Our secure registry indicates that a vote has already been cast with these credentials.
+                    Our secure registry indicates that you are not eligible to vote at this time.
+                </p>
+                <p className="mt-2 text-rose-600 font-mono text-xs bg-rose-50 px-3 py-1 rounded-full border border-rose-100">
+                    Reason: {reason}
                 </p>
 
                 <div className="mt-8 mb-8 p-4 bg-orange-50 rounded-xl border border-orange-100 text-left w-full max-w-xs">
