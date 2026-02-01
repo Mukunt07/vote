@@ -26,22 +26,22 @@ export default function Login({ onLogin }) {
         try {
             // Check Real Firebase Auth
             const result = await signInWithEmailAndPassword(auth, email, password);
-            // Verify if this user is actually in our 'admins' collection
-            const isAdmin = await verifyAdmin(result.user.email);
-            if (isAdmin) {
+
+            if (onLogin) {
                 onLogin({
                     email: result.user.email,
                     displayName: result.user.displayName || 'Admin',
                     photoURL: result.user.photoURL,
                     isMock: false
                 });
-            } else {
-                setError('Access Denied. Admin record not found.');
-                await auth.signOut();
             }
         } catch (err) {
             console.error(err);
-            setError('Invalid credentials.');
+            if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+                setError('Invalid email or password.');
+            } else {
+                setError(`Login failed: ${err.message}`);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -54,26 +54,20 @@ export default function Login({ onLogin }) {
             const result = await signInWithPopup(auth, googleProvider);
             const user = result.user;
 
-            // Verify if this email exists in 'admins' collection
-            const isAdmin = await verifyAdmin(user.email);
-
-            if (isAdmin) {
+            if (onLogin) {
                 onLogin({
                     email: user.email,
                     displayName: user.displayName,
                     photoURL: user.photoURL,
                     isMock: false
                 });
-            } else {
-                setError('Access Denied. This account is not an authorized admin.');
-                await auth.signOut();
             }
         } catch (err) {
             console.error(err);
             if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
                 setError('Login cancelled.');
             } else {
-                setError('Google Sign-In failed. Try again.');
+                setError(`Google Sign-In failed: ${err.message}`);
             }
         } finally {
             setIsLoading(false);

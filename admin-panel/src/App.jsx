@@ -83,7 +83,7 @@ function AppContent() {
 
   return (
     <Routes>
-      <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+      <Route path="/login" element={!user ? <Login onLogin={() => { }} /> : <Navigate to="/" />} />
       <Route path="/signup" element={!hasAdmin ? <Signup onSignup={() => setHasAdmin(true)} /> : <Navigate to="/login" />} />
 
       {/* Protected Admin Routes */}
