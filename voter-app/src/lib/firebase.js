@@ -2,13 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+    apiKey: "AIzaSyB_mGKa8UEqFjNbWQ6rbrmlW9cvtmkd99o",
+    authDomain: "election2026-60409.firebaseapp.com",
+    projectId: "election2026-60409",
+    storageBucket: "election2026-60409.firebasestorage.app",
+    messagingSenderId: "1086748790814",
+    appId: "1:1086748790814:web:115ce16bae862f13e01e0f",
+    measurementId: "G-FRW05G7N5F"
 };
 
 const app = initializeApp(firebaseConfig);
