@@ -27,9 +27,31 @@ export default function Layout({ children }) {
                 </main>
 
                 {/* Footer */}
-                <footer className="py-6 text-center bg-slate-50 border-t border-slate-100">
-                    <p className="text-xs text-slate-400 font-medium uppercase tracking-widest">
-                        Survey for TamilNadu Election 2026 & Student project
+                <footer className="py-8 px-6 text-center bg-slate-50 border-t border-slate-100 flex flex-col gap-4">
+                    <div>
+                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">
+                            Official Survey & Project
+                        </p>
+                        <p className="text-[10px] text-slate-400 leading-relaxed">
+                            Tamil Nadu Election 2026 Sentiment Analysis<br />
+                            A Collegiate Engineering Project
+                        </p>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-200/60">
+                        <h4 className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter mb-2 underline underline-offset-2">
+                            Terms & Conditions
+                        </h4>
+                        <p className="text-[9px] text-slate-400 leading-tight text-balance">
+                            This is a <strong>simulated voting platform</strong> created for academic purposes.
+                            Votes cast here are part of a public opinion survey and carry no legal weight.
+                            Biometric data is processed locally into anonymous hashes to prevent duplicates.
+                            By using this app, you agree to participate in this research project.
+                        </p>
+                    </div>
+
+                    <p className="text-[8px] text-slate-300 font-mono mt-2">
+                        v1.2.0 Hardened Build
                     </p>
                 </footer>
             </div>
