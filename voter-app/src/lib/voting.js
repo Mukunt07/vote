@@ -1,4 +1,4 @@
-import { writeBatch, doc, collection, getDocs } from 'firebase/firestore';
+import { writeBatch, doc, collection, getDocs, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import { sha256 } from '../utils/crypto';
 import { getFaceDistance, arrayToDescriptor } from '../utils/face';
@@ -13,11 +13,27 @@ export async function castVote(voteData) {
     // 1. Hash the mobile number (Privacy Lock)
     const mobileHash = await sha256(mobile);
 
+    console.time("VoteProcessing");
+
+    // OPTIMIZATION: Check Mobile Registry FIRST (O(1) cost)
+    // Fail fast if this mobile number has already voted.
+    const mobileCheckRef = doc(db, "mobile_registry", mobileHash);
+    const mobileSnap = await getDoc(mobileCheckRef); // Use getDoc, not getDocs
+    if (mobileSnap.exists()) {
+        console.timeEnd("VoteProcessing");
+        throw new Error("Already Voted: This mobile number has already cast a vote.");
+    }
+
     // 2. CHECK FOR DUPLICATE BIOMETRICS (Client-Side AI Check)
-    // Download existing face vectors. In production, this moves to server.
+    // Download existing face vectors. 
+    console.time("BiometricFetch");
     if (faceDescriptor) {
         const querySnapshot = await getDocs(collection(db, "biometric_registry"));
+        console.timeEnd("BiometricFetch");
+
+        console.time("BiometricCalc");
         const currentDescriptor = arrayToDescriptor(faceDescriptor);
+        let matchFound = false;
 
         for (const docSnap of querySnapshot.docs) {
             const data = docSnap.data();
@@ -25,11 +41,18 @@ export async function castVote(voteData) {
                 const storedDescriptor = arrayToDescriptor(data.vector);
                 const distance = getFaceDistance(currentDescriptor, storedDescriptor);
 
-                // Distance < 0.6 is usually considered a match for dlib models
+                // Distance < 0.5 is a match
                 if (distance < 0.5) {
-                    throw new Error("Biometric Duplicate: You have already voted!");
+                    matchFound = true;
+                    break;
                 }
             }
+        }
+        console.timeEnd("BiometricCalc");
+
+        if (matchFound) {
+            console.timeEnd("VoteProcessing");
+            throw new Error("Biometric Duplicate: You have already voted!");
         }
     }
 
