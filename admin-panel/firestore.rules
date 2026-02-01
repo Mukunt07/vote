@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ADMINS: Read-only for public (to check existence), Write-locked (Manual provisioning only)
+    match /admins/{adminId} {
+      allow read: if true; 
+      allow write: if false; // LOCKED: Prevents privilege escalation
+    }
+
+    // VOTES: Immutable Ledger
+    // Users (Public) can Create. Admin can Read. No one can Update/Delete.
+    match /votes/{voteId} {
+      allow read: if request.auth != null; // Only Authenticated Admins can read votes
+      allow create: if true; // Public voting enabled
+      allow update, delete: if false; // Immutable
+    }
+    
+    // FACE REGISTRY: Write-once lock
+    match /face_registry/{faceId} {
+      allow read: if request.auth != null; // Admin stats
+      allow create: if true; // Public registration
+      allow update, delete: if false; // Immutable
+    }
+
+    // MOBILE REGISTRY: Write-once lock
+    match /mobile_registry/{mobileId} {
+      allow read: if request.auth != null; // Admin stats
+      allow create: if true; // Public registration
+      allow update, delete: if false; // Immutable
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

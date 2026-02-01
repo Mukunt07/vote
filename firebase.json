@@ -1,0 +1,38 @@
+{
+    "hosting": [
+        {
+            "target": "voter-app",
+            "public": "voter-app/dist",
+            "ignore": [
+                "firebase.json",
+                "**/.*",
+                "**/node_modules/**"
+            ],
+            "rewrites": [
+                {
+                    "source": "**",
+                    "destination": "/index.html"
+                }
+            ]
+        },
+        {
+            "target": "admin-panel",
+            "public": "admin-panel/dist",
+            "ignore": [
+                "firebase.json",
+                "**/.*",
+                "**/node_modules/**"
+            ],
+            "rewrites": [
+                {
+                    "source": "**",
+                    "destination": "/index.html"
+                }
+            ]
+        }
+    ],
+    "firestore": {
+        "rules": "admin-panel/firestore.rules",
+        "indexes": "admin-panel/firestore.indexes.json"
+    }
+}
