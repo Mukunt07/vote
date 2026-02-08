@@ -141,12 +141,12 @@ export default function LiveResults() {
                                             const data = candidateData.find(c => c.name === payload.value);
                                             return (
                                                 <g transform={`translate(${x},${y})`}>
-                                                    <image href={data?.logo} x={-40} y={-10} width={20} height={20} style={{ borderRadius: '50%' }} clipPath="circle()" />
-                                                    <text x={-10} y={4} fill="#cbd5e1" fontSize={12} textAnchor="end">{payload.value}</text>
+                                                    <image href={data?.logo} x={-140} y={-10} width={20} height={20} style={{ borderRadius: '50%' }} clipPath="circle()" />
+                                                    <text x={-110} y={4} fill="#cbd5e1" fontSize={12} textAnchor="start">{payload.value}</text>
                                                 </g>
                                             )
                                         }}
-                                        width={100}
+                                        width={150}
                                         tickLine={false}
                                         axisLine={false}
                                     />
