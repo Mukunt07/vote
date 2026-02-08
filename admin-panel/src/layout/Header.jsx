@@ -23,10 +23,6 @@ export default function Header({ onMenuClick, title }) {
                             className="h-9 w-64 bg-slate-800 border border-slate-700 rounded-lg pl-10 pr-4 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                         />
                     </div>
-                    <button className="p-2 text-slate-400 rounded-full hover:text-white hover:bg-slate-800 relative">
-                        <Bell size={20} />
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-slate-900"></span>
-                    </button>
                 </div>
             </div>
         </header>

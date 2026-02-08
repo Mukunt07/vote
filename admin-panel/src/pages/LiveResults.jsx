@@ -47,6 +47,35 @@ export default function LiveResults() {
     const [loading, setLoading] = useState(true);
     const [leader, setLeader] = useState(null);
 
+    const generateReport = () => {
+        if (!candidateData.length) return;
+
+        const headers = ['Candidate Name', 'Party', 'Votes', 'Vote Share (%)'];
+        const rows = candidateData.map(c => [
+            c.name,
+            c.name, // Using name as party for now since it maps directly
+            c.votes,
+            ((c.votes / totalVotes) * 100).toFixed(2)
+        ]);
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(e => e.join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+
+        link.setAttribute('href', url);
+        link.setAttribute('download', `election_results_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, "votes"), (snapshot) => {
             const counts = {};
@@ -91,7 +120,10 @@ export default function LiveResults() {
                     <h2 className="text-2xl font-bold text-white tracking-tight">Live Election Results</h2>
                     <p className="text-slate-400 text-sm mt-1">Real-time vote aggregation & analytics.</p>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-lg border border-emerald-500/20 transition-colors text-sm font-medium">
+                <button
+                    onClick={generateReport}
+                    className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-lg border border-emerald-500/20 transition-colors text-sm font-medium"
+                >
                     <Download size={16} />
                     <span>Generate Final Report</span>
                 </button>
