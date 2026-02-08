@@ -167,7 +167,7 @@ export default function LiveResults() {
                 </Card>
 
                 <Card className="min-h-[400px] bg-slate-800/50 backdrop-blur border-slate-700/50">
-                    <h3 className="text-lg font-semibold text-white mb-6">Market Share</h3>
+                    <h3 className="text-lg font-semibold text-white mb-6"><Analytics></Analytics></h3>
                     <div className="h-[200px] w-full relative mb-6">
                         {candidateData.length > 0 ? (
                             <ResponsiveContainer width="100%" height="100%">
