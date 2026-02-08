@@ -63,8 +63,8 @@ export default function Dashboard() {
             setStats(prev => ({ ...prev, activeVoters: snapshot.size }));
         });
 
-        // Listen for Recent Activity (Last 5 votes)
-        const q = query(collection(db, "votes"), orderBy("timestamp", "desc"), limit(5));
+        // Listen for Recent Activity (Last 50 votes)
+        const q = query(collection(db, "votes"), orderBy("timestamp", "desc"), limit(50));
         const unsubRecent = onSnapshot(q, (snapshot) => {
             const votes = snapshot.docs.map(doc => ({
                 id: doc.id,
@@ -167,7 +167,7 @@ export default function Dashboard() {
                 </Card>
 
                 {/* Recent Activity Feed */}
-                <Card className="min-h-[400px] bg-slate-800/40 backdrop-blur border-slate-700/50 flex flex-col">
+                <Card className="h-[600px] bg-slate-800/40 backdrop-blur border-slate-700/50 flex flex-col">
                     <div className="mb-6 flex items-center justify-between">
                         <div>
                             <h3 className="text-lg font-semibold text-white">Recent Activity</h3>
